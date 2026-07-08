@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover, touch-action: manipulation">
+  <title>Glow Hockey Pro | Softbird</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background: #000;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: manipulation;
+    }
+
+    /* SPLASH SCREEN */
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #0a1628 0%, #020810 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 500;
+      animation: splashFade 2.5s ease-in-out forwards;
+    }
+
+    @keyframes splashFade {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    .splash-logo {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .splash-bird {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 30px #00b7ff) drop-shadow(0 0 60px #0066ff);
+    }
+
+    .splash-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 3px;
+      text-shadow: 0 0 30px #00d4ff, 0 0 60px #0088ff;
+      text-align: center;
+    }
+
+    .splash-sub {
+      font-size: 1rem;
+      color: #7cc8ff;
+      margin-top: 8px;
+      letter-spacing: 2px;
+    }
+
+    /* MAIN MENU */
+    .menu-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #0d1b33 0%, #030a18 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 400;
+    }
+
+    .menu-hidden {
+      display: none;
+    }
+
+    .menu-title {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 40px #00c8ff, 0 0 80px #0055ff;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .menu-subtitle {
+      color: #8ecaff;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      margin-bottom: 40px;
+    }
+
+    .menu-btn {
+      width: 260px;
+      padding: 16px 30px;
+      margin: 10px 0;
+      border: 2px solid rgba(0, 200, 255, 0.6);
+      background: rgba(10, 25, 50, 0.8);
+      backdrop-filter: blur(10px);
+      color: #e0f0ff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.25s;
+      text-align: center;
+    }
+
+    .menu-btn:hover {
+      background: #006eff;
+      border-color: #00f2ff;
+      box-shadow: 0 0 40px #0088ff;
+      color: white;
+    }
+
+    /* DIFFICULTY SELECT */
+    .difficulty-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 8, 20, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 450;
+    }
+
+    .diff-hidden {
+      display: none;
+    }
+
+    .diff-title {
+      font-size: 2.2rem;
+      color: white;
+      margin-bottom: 35px;
+      text-shadow: 0 0 30px cyan;
+    }
+
+    .diff-btn {
+      width: 220px;
+      padding: 15px;
+      margin: 8px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border: 2px solid #0cf;
+      background: transparent;
+      color: #c2f0ff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .diff-btn:hover {
+      background: #00a6ff;
+      color: #000;
+    }
+
+    /* GAME FULLSCREEN UI */
+    .game-full {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #020812;
+      touch-action: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .hud-top {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .score-panel {
+      background: rgba(0, 10, 25, 0.75);
+      backdrop-filter: blur(15px);
+      border: 1px solid #00e0ff88;
+      border-radius: 35px;
+      padding: 8px 22px;
+      display: flex;
+      gap: 25px;
+      color: white;
+      font-weight: bold;
+      pointer-events: auto;
+    }
+
+    .score-item {
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      color: #9ad0ff;
+    }
+
+    .score-val {
+      font-size: 1.8rem;
+      text-shadow: 0 0 20px cyan;
+    }
+
+    .icon-btns {
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .icon-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(0, 20, 40, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid #0cf;
+      color: #cdf0ff;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .icon-btn:active {
+      background: #0088ff;
+      color: white;
+    }
+
+    .game-canvas-container {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: radial-gradient(circle at 50% 50%, #132744, #010617);
+      touch-action: none;
+    }
+
+    .pause-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+      color: white;
+      padding: 25px 45px;
+      border-radius: 50px;
+      font-size: 2rem;
+      font-weight: bold;
+      border: 2px solid cyan;
+      z-index: 30;
+      display: none;
+    }
+
+    .game-over-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #000c1aee;
+      backdrop-filter: blur(25px);
+      border: 2px solid #0cf;
+      border-radius: 40px;
+      padding: 30px 40px;
+      text-align: center;
+      z-index: 35;
+      display: none;
+    }
+
+    .game-over-overlay h2 {
+      color: white;
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+    }
+
+    .play-again-btn {
+      background: #0099ff;
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- SPLASH -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-logo">
+      <svg class="splash-bird" viewBox="0 0 100 100" fill="none">
+        <path d="M20 65 Q50 10 80 60 Q70 40 50 45 Q30 40 20 65Z" fill="#00c8ff" opacity="0.9"/>
+        <circle cx="50" cy="38" r="8" fill="#00e0ff"/>
+        <path d="M38 70 L50 85 L62 70" stroke="#00b7ff" stroke-width="3" fill="none"/>
+        <circle cx="42" cy="55" r="4" fill="white"/>
+        <circle cx="58" cy="55" r="4" fill="white"/>
+      </svg>
+    </div>
+    <div class="splash-text">SOFTBIRD TECHNOLOGIES</div>
+    <div class="splash-sub">GLOW HOCKEY PRO</div>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div id="menuScreen" class="menu-screen menu-hidden">
+    <div class="menu-title">GLOW HOCKEY</div>
+    <div class="menu-subtitle">PRO EDITION</div>
+    <button id="vsComputerBtn" class="menu-btn">🤖 VS COMPUTER</button>
+    <button id="vsPlayerBtn" class="menu-btn">👥 TWO PLAYERS</button>
+    <button id="aboutMenuBtn" class="menu-btn">ℹ️ ABOUT</button>
+  </div>
+
+  <!-- DIFFICULTY SELECT -->
+  <div id="difficultyScreen" class="difficulty-screen diff-hidden">
+    <div class="diff-title">SELECT DIFFICULTY</div>
+    <button class="diff-btn" data-diff="easy">🟢 EASY</button>
+    <button class="diff-btn" data-diff="medium">🟡 MEDIUM</button>
+    <button class="diff-btn" data-diff="hard">🔴 HARD</button>
+    <button id="backToMenuFromDiff" class="diff-btn" style="margin-top:25px;">← BACK</button>
+  </div>
+
+  <!-- ABOUT MODAL -->
+  <div id="aboutModal" style="display:none; position:fixed; top:0;left:0;width:100%;height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(18px); z-index:600; align-items:center;justify-content:center;">
+    <div style="background:#0b1a2f; border:2px solid cyan; border-radius:35px; padding:30px; text-align:center; color:white; max-width:340px;">
+      <h3 style="color:#00e0ff;">GLOW HOCKEY PRO</h3>
+      <p>⚡ Neon arcade sports</p>
+      <p>🕹️ AI difficulty & 2P mode</p>
+      <p>🎨 Made by <strong>Softbird Technologies</strong></p>
+      <p style="font-size:0.8rem;">© 2026 · v2.0</p>
+      <button id="closeAboutBtn" style="margin-top:20px; padding:10px 25px; border-radius:25px; background:#006eff; color:white; border:none;">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- GAME FULLSCREEN -->
+  <div id="gameFull" class="game-full hidden">
+    <div class="hud-top">
+      <div class="score-panel">
+        <div class="score-item"><span class="score-label" id="leftLabel">CPU</span><div class="score-val" id="leftScore">0</div></div>
+        <div class="score-item"><span class="score-label" id="rightLabel">YOU</span><div class="score-val" id="rightScore">0</div></div>
+      </div>
+      <div class="icon-btns">
+        <button class="icon-btn" id="pauseToggleBtn">⏯️</button>
+        <button class="icon-btn" id="restartGameBtn">↺</button>
+        <button class="icon-btn" id="quitGameBtn">✕</button>
+      </div>
+    </div>
+    <div class="game-canvas-container">
+      <canvas id="gameCanvas" width="400" height="700"></canvas>
+    </div>
+    <div class="pause-overlay" id="pauseOverlay">⏸️ PAUSED</div>
+    <div class="game-over-overlay" id="gameOverOverlay">
+      <h2 id="winnerMessage">GAME OVER</h2>
+      <button class="play-again-btn" id="playAgainOverlayBtn">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      // DOM elements
+      const splash = document.getElementById('splashScreen');
+      const menu = document.getElementById('menuScreen');
+      const diffScreen = document.getElementById('difficultyScreen');
+      const gameFull = document.getElementById('gameFull');
+      const aboutModal = document.getElementById('aboutModal');
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // HUD
+      const leftLabel = document.getElementById('leftLabel');
+      const rightLabel = document.getElementById('rightLabel');
+      const leftScoreEl = document.getElementById('leftScore');
+      const rightScoreEl = document.getElementById('rightScore');
+      const pauseOverlay = document.getElementById('pauseOverlay');
+      const gameOverOverlay = document.getElementById('gameOverOverlay');
+      const winnerMessage = document.getElementById('winnerMessage');
+
+      // State
+      let gameMode = 'ai'; // 'ai' or 'two'
+      let difficulty = 'medium';
+      let leftScore = 0, rightScore = 0;
+      let gameActive = true;
+      let gamePaused = false;
+      const WIN_SCORE = 5;
+      const CW = 400, CH = 700;
+
+      // Paddles & puck
+      const paddleR = 30;
+      const puckR = 16;
+      let playerPaddle = { x: CW/2, y: CH-100, r: paddleR };
+      let opponentPaddle = { x: CW/2, y: 100, r: paddleR };
+      let puck = { x: CW/2, y: CH/2, vx: 0, vy: 0, r: puckR };
+
+      // Multi-touch tracking: store touches by identifier
+      let touchMap = new Map(); // id -> {x, y}
+
+      function resetPositions() {
+        playerPaddle.x = CW/2; playerPaddle.y = CH-100;
+        opponentPaddle.x = CW/2; opponentPaddle.y = 100;
+        puck.x = CW/2; puck.y = CH/2;
+        let angle = Math.random() * Math.PI * 2;
+        let speed = 5.8;
+        puck.vx = Math.cos(angle) * speed;
+        puck.vy = Math.sin(angle) * speed;
+        if (Math.abs(puck.vy) < 2.5) puck.vy = puck.vy > 0 ? 3 : -3;
+      }
+
+      function fullReset() {
+        leftScore = 0; rightScore = 0;
+        updateScores();
+        gameActive = true;
+        gamePaused = false;
+        pauseOverlay.style.display = 'none';
+        gameOverOverlay.style.display = 'none';
+        resetPositions();
+      }
+
+      function updateScores() {
+        leftScoreEl.textContent = leftScore;
+        rightScoreEl.textContent = rightScore;
+      }
+
+      function goalForLeft() { // left side scores
+        leftScore++;
+        updateScores();
+        if (leftScore >= WIN_SCORE) endGame(leftLabel.textContent + ' WINS!');
+        else resetPositions();
+      }
+
+      function goalForRight() {
+        rightScore++;
+        updateScores();
+        if (rightScore >= WIN_SCORE) endGame(rightLabel.textContent + ' WINS!');
+        else resetPositions();
+      }
+
+      function endGame(msg) {
+        gameActive = false;
+        winnerMessage.textContent = msg;
+        gameOverOverlay.style.display = 'block';
+      }
+
+      // Physics & collision
+      function paddleCollision(paddle) {
+        let dx = puck.x - paddle.x;
+        let dy = puck.y - paddle.y;
+        let dist = Math.sqrt(dx*dx+dy*dy);
+        let minDist = paddle.r + puck.r;
+        if (dist < minDist && dist > 0.001) {
+          let angle = Math.atan2(dy, dx);
+          puck.x = paddle.x + Math.cos(angle) * minDist;
+          puck.y = paddle.y + Math.sin(angle) * minDist;
+          let nx = dx/dist, ny = dy/dist;
+          let vn = puck.vx*nx + puck.vy*ny;
+          if (vn < 0) {
+            puck.vx -= 2*vn*nx;
+            puck.vy -= 2*vn*ny;
+          }
+          let sp = Math.sqrt(puck.vx**2 + puck.vy**2);
+          if (sp < 7) { puck.vx *= 1.2; puck.vy *= 1.2; }
+          if (sp > 11) { puck.vx = (puck.vx/sp)*11; puck.vy = (puck.vy/sp)*11; }
+        }
+      }
+
+      function update() {
+        if (!gameActive || gamePaused) return;
+        puck.x += puck.vx;
+        puck.y += puck.vy;
+
+        if (puck.x - puck.r < 0) { puck.x = puck.r; puck.vx *= -1; }
+        if (puck.x + puck.r > CW) { puck.x = CW - puck.r; puck.vx *= -1; }
+
+        const goalW = 130, goalLeft = (CW-goalW)/2;
+        if (puck.y - puck.r < 20) {
+          if (puck.x > goalLeft && puck.x < goalLeft+goalW) goalForRight();
+          else { puck.y = puck.r+20; puck.vy = Math.abs(puck.vy); }
+        } else if (puck.y + puck.r > CH-20) {
+          if (puck.x > goalLeft && puck.x < goalLeft+goalW) goalForLeft();
+          else { puck.y = CH-puck.r-20; puck.vy = -Math.abs(puck.vy); }
+        }
+
+        paddleCollision(playerPaddle);
+        paddleCollision(opponentPaddle);
+
+        if (gameMode === 'ai') moveAI();
+
+        // keep paddles in bounds
+        [playerPaddle, opponentPaddle].forEach(p => {
+          p.x = Math.min(Math.max(p.x, p.r), CW - p.r);
+          p.y = Math.min(Math.max(p.y, p.r+50), CH - p.r - 50);
+        });
+      }
+
+      function moveAI() {
+        let targetX = opponentPaddle.x;
+        let reactSpeed = difficulty==='easy'?0.04 : (difficulty==='medium'?0.075 : 0.12);
+        if (puck.vy < -0.2) {
+          let predX = puck.x + puck.vx * (difficulty==='hard'?14:10);
+          targetX = predX;
+        } else {
+          targetX = CW/2 + (puck.x-CW/2)*0.02;
+        }
+        opponentPaddle.x += (targetX - opponentPaddle.x) * reactSpeed;
+      }
+
+      function draw() {
+        ctx.clearRect(0,0,CW,CH);
+        ctx.strokeStyle='#00e0ff'; ctx.lineWidth=2; ctx.setLineDash([18,22]);
+        ctx.beginPath(); ctx.moveTo(0,CH/2); ctx.lineTo(CW,CH/2); ctx.stroke();
+        ctx.setLineDash([]);
+        // goals
+        ctx.fillStyle='#0a1a30'; ctx.strokeStyle='#0cf';
+        const gw=130; ctx.fillRect((CW-gw)/2,0,gw,22); ctx.strokeRect((CW-gw)/2,0,gw,22);
+        ctx.fillRect((CW-gw)/2,CH-22,gw,22); ctx.strokeRect((CW-gw)/2,CH-22,gw,22);
+        // puck
+        ctx.shadowColor='#0ff'; ctx.shadowBlur=25;
+        ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.r,0,Math.PI*2); ctx.fillStyle='white'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.stroke();
+        // paddles
+        ctx.beginPath(); ctx.arc(playerPaddle.x,playerPaddle.y,paddleR,0,2*Math.PI); ctx.fillStyle='#00a6ff'; ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(opponentPaddle.x,opponentPaddle.y,paddleR,0,2*Math.PI); ctx.fillStyle= gameMode==='ai'?'#ff3b6f':'#ffaa00'; ctx.fill(); ctx.stroke();
+        ctx.shadowBlur=0;
+      }
+
+      function loop() {
+        update(); draw(); requestAnimationFrame(loop);
+      }
+
+      // MULTI-TOUCH HANDLING
+      function getCanvasCoords(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (clientX - rect.left) * (CW / rect.width),
+          y: (clientY - rect.top) * (CH / rect.height)
+        };
+      }
+
+      function updatePaddlesFromTouches() {
+        if (!gameActive || gamePaused) return;
+        if (gameMode === 'two') {
+          // two players: assign touch closest to top to opponent, closest to bottom to player
+          let topTouch = null, bottomTouch = null;
+          for (let t of touchMap.values()) {
+            let cy = t.y;
+            if (!topTouch || cy < topTouch.y) topTouch = {x:t.x, y:t.y};
+            if (!bottomTouch || cy > bottomTouch.y) bottomTouch = {x:t.x, y:t.y};
+          }
+          if (topTouch) {
+            opponentPaddle.x = topTouch.x;
+            opponentPaddle.y = Math.min(Math.max(topTouch.y, paddleR+50), CH/2 - 20);
+          }
+          if (bottomTouch) {
+            playerPaddle.x = bottomTouch.x;
+            playerPaddle.y = Math.max(Math.min(bottomTouch.y, CH-paddleR-50), CH/2 + 20);
+          }
+        } else {
+          // single player: use first touch for player paddle
+          if (touchMap.size > 0) {
+            let first = touchMap.values().next().value;
+            playerPaddle.x = first.x;
+            playerPaddle.y = Math.max(Math.min(first.y, CH-paddleR-50), CH/2+20);
+          }
+        }
+      }
+
+      canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        for (let touch of e.changedTouches) {
+          let coords = getCanvasCoords(touch.clientX, touch.clientY);
+          touchMap.set(touch.identifier, coords);
+        }
+        updatePaddlesFromTouches();
+      }, {passive: false});
+
+      canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        for (let touch of e.changedTouches) {
+          if (touchMap.has(touch.identifier)) {
+            touchMap.set(touch.identifier, getCanvasCoords(touch.clientX, touch.clientY));
+          }
+        }
+        updatePaddlesFromTouches();
+      }, {passive: false});
+
+      canvas.addEventListener('touchend', e => {
+        e.preventDefault();
+        for (let touch of e.changedTouches) touchMap.delete(touch.identifier);
+        updatePaddlesFromTouches();
+      });
+      canvas.addEventListener('touchcancel', e => {
+        e.preventDefault();
+        for (let touch of e.changedTouches) touchMap.delete(touch.identifier);
+      });
+
+      // Mouse fallback
+      canvas.addEventListener('mousemove', e => {
+        if (e.buttons === 1) {
+          let c = getCanvasCoords(e.clientX, e.clientY);
+          if (gameMode==='two') {
+            if (c.y < CH/2) { opponentPaddle.x=c.x; opponentPaddle.y=c.y; }
+            else { playerPaddle.x=c.x; playerPaddle.y=c.y; }
+          } else {
+            playerPaddle.x=c.x; playerPaddle.y=c.y;
+          }
+        }
+      });
+
+      // UI LOGIC
+      function showMenu() {
+        gameFull.classList.add('hidden');
+        diffScreen.classList.add('diff-hidden');
+        menu.classList.remove('menu-hidden');
+        gameActive = false;
+      }
+
+      splash.addEventListener('animationend', () => {
+        splash.style.display = 'none';
+        menu.classList.remove('menu-hidden');
+      });
+
+      document.getElementById('vsComputerBtn').addEventListener('click', ()=>{
+        menu.classList.add('menu-hidden');
+        diffScreen.classList.remove('diff-hidden');
+      });
+
+      document.querySelectorAll('.diff-btn[data-diff]').forEach(b=>{
+        b.addEventListener('click', (e)=>{
+          difficulty = e.target.dataset.diff;
+          gameMode = 'ai';
+          leftLabel.textContent = 'CPU';
+          rightLabel.textContent = 'YOU';
+          startGame();
+        });
+      });
+
+      document.getElementById('backToMenuFromDiff').addEventListener('click', ()=>{
+        diffScreen.classList.add('diff-hidden');
+        menu.classList.remove('menu-hidden');
+      });
+
+      document.getElementById('vsPlayerBtn').addEventListener('click', ()=>{
+        gameMode = 'two';
+        leftLabel.textContent = 'P1';
+        rightLabel.textContent = 'P2';
+        startGame();
+      });
+
+      document.getElementById('aboutMenuBtn').addEventListener('click', ()=>{
+        aboutModal.style.display = 'flex';
+      });
+      document.getElementById('closeAboutBtn').addEventListener('click', ()=>{
+        aboutModal.style.display = 'none';
+      });
+
+      function startGame() {
+        menu.classList.add('menu-hidden');
+        diffScreen.classList.add('diff-hidden');
+        gameFull.classList.remove('hidden');
+        fullReset();
+        gameActive = true;
+        touchMap.clear();
+      }
+
+      document.getElementById('pauseToggleBtn').addEventListener('click', ()=>{
+        if (!gameActive) return;
+        gamePaused = !gamePaused;
+        pauseOverlay.style.display = gamePaused ? 'flex' : 'none';
+      });
+
+      document.getElementById('restartGameBtn').addEventListener('click', fullReset);
+      document.getElementById('quitGameBtn').addEventListener('click', showMenu);
+      document.getElementById('playAgainOverlayBtn').addEventListener('click', ()=>{
+        gameOverOverlay.style.display = 'none';
+        fullReset();
+      });
+
+      loop();
+    })();
+  </script>
+</body>
+</html>
